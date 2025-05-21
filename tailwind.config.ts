@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				explorAI: {
+					blue: '#2A85FF',
+					green: '#38C675',
+					amber: '#F59E0B',
+					lightBlue: '#EBF3FF',
+					darkBlue: '#1E4D8D',
+					gray: '#F0F5FA',
+					darkGray: '#4F5E71',
 				}
 			},
 			borderRadius: {
@@ -84,11 +94,24 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' }
+				},
+				'slide-in': {
+					from: { transform: 'translateY(10px)', opacity: '0' },
+					to: { transform: 'translateY(0)', opacity: '1' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-slow': 'pulse-slow 2s ease-in-out infinite',
+				'slide-in': 'slide-in 0.3s ease-out forwards'
+			},
+			backgroundImage: {
+				'gradient-travel': 'linear-gradient(135deg, #2A85FF 0%, #38C675 100%)',
 			}
 		}
 	},
