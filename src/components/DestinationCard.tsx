@@ -3,12 +3,16 @@ import React from 'react';
 import { Destination } from '@/data/destinations';
 import { Star, Calendar, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 interface DestinationCardProps {
   destination: Destination & { matchScore?: number };
+  budgetValue?: number;
 }
 
-const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
+const DestinationCard: React.FC<DestinationCardProps> = ({ destination, budgetValue }) => {
+  const navigate = useNavigate();
+  
   const getBudgetLabel = (cost: string): string => {
     const labels: Record<string, string> = {
       'low': 'Econômico',
@@ -52,9 +56,49 @@ const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
       </div>
     );
   };
+
+  // Gerador de preço aproximado baseado no custo médio e no orçamento do usuário
+  const getApproximatePrice = (): string => {
+    let basePrice = 0;
+    
+    switch (destination.averageCost) {
+      case 'low':
+        basePrice = 2500;
+        break;
+      case 'medium':
+        basePrice = 5500;
+        break;
+      case 'high':
+        basePrice = 12000;
+        break;
+      case 'very high':
+        basePrice = 25000;
+        break;
+      default:
+        basePrice = 5000;
+    }
+    
+    // Adiciona uma variação de até 20% para dar mais diversidade nos preços
+    const variation = Math.random() * 0.4 - 0.2; // -20% a +20%
+    const finalPrice = Math.round(basePrice * (1 + variation));
+    
+    return `R$ ${finalPrice.toLocaleString('pt-BR')}`;
+  };
+
+  const handleCardClick = () => {
+    navigate(`/destino/${destination.id}`, { 
+      state: { 
+        destination, 
+        budgetValue 
+      } 
+    });
+  };
   
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300 relative animate-slide-in">
+    <div 
+      className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300 relative animate-slide-in cursor-pointer"
+      onClick={handleCardClick}
+    >
       {renderMatchIndicator()}
       
       <div className="h-48 w-full overflow-hidden">
@@ -90,7 +134,7 @@ const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
           ))}
         </div>
         
-        <div className="flex justify-between items-center text-sm mt-4 pt-3 border-t border-gray-100">
+        <div className="flex justify-between items-center text-sm pt-3 border-t border-gray-100">
           <div className="flex items-center text-amber-500">
             <Star className="h-4 w-4 fill-current mr-1" />
             <span>{(
@@ -102,6 +146,13 @@ const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
           <div className="flex items-center text-explorAI-darkGray">
             <Calendar className="h-3 w-3 mr-1" />
             <span className="text-xs">{getBestSeasonText(destination.bestTimeToVisit)}</span>
+          </div>
+        </div>
+        
+        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-end">
+          <div className="text-right">
+            <div className="text-xs text-explorAI-darkGray">Valor aproximado p/ pessoa</div>
+            <div className="text-explorAI-blue font-medium">{getApproximatePrice()}</div>
           </div>
         </div>
       </div>

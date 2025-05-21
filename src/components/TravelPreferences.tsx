@@ -2,10 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { UserPreferences } from '@/lib/aiService';
-import { Compass } from 'lucide-react';
+import { Compass, Calendar, Sun, Clock, SlidersHorizontal } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Slider } from '@/components/ui/slider';
 
 interface TravelPreferencesProps {
   onPreferencesChange: (preferences: UserPreferences) => void;
@@ -17,6 +19,9 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
     preferredActivities: [],
     travelStyle: 'equilibrado',
     budget: 'moderado',
+    budgetValue: 5000,
+    duration: '7-10 dias',
+    season: 'qualquer',
   });
 
   const handleInterestChange = (interest: string) => {
@@ -63,16 +68,56 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
     });
   };
 
-  const handleBudgetChange = (budget: string) => {
+  const handleBudgetSliderChange = (value: number[]) => {
     setPreferences((prev) => {
       const updatedPreferences = {
         ...prev,
-        budget
+        budgetValue: value[0],
+        budget: getBudgetCategory(value[0])
       };
       
       onPreferencesChange(updatedPreferences);
       return updatedPreferences;
     });
+  };
+
+  const handleDurationChange = (duration: string) => {
+    setPreferences((prev) => {
+      const updatedPreferences = {
+        ...prev,
+        duration
+      };
+      
+      onPreferencesChange(updatedPreferences);
+      return updatedPreferences;
+    });
+  };
+
+  const handleSeasonChange = (season: string) => {
+    setPreferences((prev) => {
+      const updatedPreferences = {
+        ...prev,
+        season
+      };
+      
+      onPreferencesChange(updatedPreferences);
+      return updatedPreferences;
+    });
+  };
+
+  // Helper function to format budget values
+  const formatBudgetValue = (value: number) => {
+    if (value >= 100000) return "R$ 100.000+";
+    return `R$ ${value.toLocaleString('pt-BR')}`;
+  };
+
+  // Helper function to categorize budget
+  const getBudgetCategory = (value: number): string => {
+    if (value < 2000) return 'econômico';
+    if (value < 5000) return 'moderado';
+    if (value < 15000) return 'confortável';
+    if (value < 50000) return 'luxo';
+    return 'ultra luxo';
   };
 
   return (
@@ -83,11 +128,13 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
       </div>
       
       <Tabs defaultValue="interesses">
-        <TabsList className="grid grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-6 mb-6">
           <TabsTrigger value="interesses">Interesses</TabsTrigger>
           <TabsTrigger value="atividades">Atividades</TabsTrigger>
           <TabsTrigger value="estilo">Estilo</TabsTrigger>
           <TabsTrigger value="orcamento">Orçamento</TabsTrigger>
+          <TabsTrigger value="duracao">Duração</TabsTrigger>
+          <TabsTrigger value="temporada">Temporada</TabsTrigger>
         </TabsList>
         
         <TabsContent value="interesses" className="space-y-4">
@@ -112,7 +159,16 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
               'Aventuras ao ar livre', 
               'Relaxar em paisagens naturais',
               'Experimentar gastronomia',
-              'Apreciar a natureza'
+              'Apreciar a natureza',
+              'Atividades radicais',
+              'Festivais e eventos',
+              'Tours históricos',
+              'Visitas a museus e galerias',
+              'Mergulho e snorkeling',
+              'Trilhas e caminhadas',
+              'Passeios de bicicleta',
+              'Vida noturna',
+              'Compras'
             ].map(activity => (
               <div key={activity} className="flex items-center space-x-2">
                 <Checkbox 
@@ -141,19 +197,88 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
           </div>
         </TabsContent>
         
-        <TabsContent value="orcamento" className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {['Econômico', 'Moderado', 'Luxo'].map(budget => (
-              <Button 
-                key={budget}
-                variant={preferences.budget === budget.toLowerCase() ? "default" : "outline"}
-                onClick={() => handleBudgetChange(budget.toLowerCase())}
-                className="h-auto py-3"
-              >
-                {budget}
-              </Button>
-            ))}
+        <TabsContent value="orcamento" className="space-y-6">
+          <div className="px-2">
+            <div className="flex justify-between mb-1">
+              <span className="text-sm text-explorAI-darkGray">Orçamento por pessoa:</span>
+              <span className="text-sm font-medium text-explorAI-blue">
+                {formatBudgetValue(preferences.budgetValue)}
+              </span>
+            </div>
+            
+            <Slider 
+              defaultValue={[5000]}
+              min={500}
+              max={100000}
+              step={500}
+              value={[preferences.budgetValue]}
+              onValueChange={handleBudgetSliderChange}
+              className="mt-6"
+            />
+            
+            <div className="flex justify-between mt-2 text-xs text-gray-500">
+              <span>R$ 500</span>
+              <span>R$ 100.000+</span>
+            </div>
           </div>
+          
+          <div className="p-3 bg-explorAI-lightBlue rounded-lg">
+            <p className="text-sm text-explorAI-darkBlue font-medium">
+              Categoria: <span className="text-explorAI-blue">{getBudgetCategory(preferences.budgetValue).charAt(0).toUpperCase() + getBudgetCategory(preferences.budgetValue).slice(1)}</span>
+            </p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="duracao" className="space-y-4">
+          <div className="flex items-center mb-4">
+            <Clock className="h-4 w-4 text-explorAI-blue mr-2" />
+            <p className="text-sm font-medium text-explorAI-darkBlue">Quantos dias você planeja viajar?</p>
+          </div>
+          
+          <RadioGroup 
+            value={preferences.duration}
+            onValueChange={handleDurationChange}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3"
+          >
+            {[
+              { label: "Final de semana (2-3 dias)", value: "2-3 dias" },
+              { label: "Semana curta (4-6 dias)", value: "4-6 dias" },
+              { label: "Uma semana (7-10 dias)", value: "7-10 dias" },
+              { label: "Duas semanas (11-15 dias)", value: "11-15 dias" },
+              { label: "Viagem longa (15+ dias)", value: "15+ dias" },
+            ].map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem id={option.value} value={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </TabsContent>
+        
+        <TabsContent value="temporada" className="space-y-4">
+          <div className="flex items-center mb-4">
+            <Sun className="h-4 w-4 text-explorAI-amber mr-2" />
+            <p className="text-sm font-medium text-explorAI-darkBlue">Em qual estação você prefere viajar?</p>
+          </div>
+          
+          <RadioGroup 
+            value={preferences.season}
+            onValueChange={handleSeasonChange}
+            className="grid grid-cols-2 gap-3"
+          >
+            {[
+              { label: "Verão (Dezembro a Março)", value: "verao" },
+              { label: "Outono (Março a Junho)", value: "outono" },
+              { label: "Inverno (Junho a Setembro)", value: "inverno" },
+              { label: "Primavera (Setembro a Dezembro)", value: "primavera" },
+              { label: "Qualquer época do ano", value: "qualquer" },
+            ].map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem id={option.value} value={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
         </TabsContent>
       </Tabs>
     </div>

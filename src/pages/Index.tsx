@@ -14,6 +14,9 @@ const Index: React.FC = () => {
     preferredActivities: [],
     travelStyle: 'equilibrado',
     budget: 'moderado',
+    budgetValue: 5000,
+    duration: '7-10 dias',
+    season: 'qualquer',
   });
   
   const [recommendedDestinations, setRecommendedDestinations] = useState<(Destination & { matchScore?: number })[]>([]);
@@ -48,6 +51,19 @@ const Index: React.FC = () => {
       }
     }, 500);
   };
+
+  const handleStartDiscovery = () => {
+    // Scroll to preferences section
+    const preferencesSection = document.querySelector('.bg-explorAI-gray');
+    if (preferencesSection) {
+      preferencesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleHowItWorks = () => {
+    // Scroll to how it works section
+    document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+  };
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -66,11 +82,17 @@ const Index: React.FC = () => {
                 incluindo jóias escondidas que você não encontraria sozinho.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <button className="bg-white text-explorAI-blue px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center">
+                <button 
+                  onClick={handleStartDiscovery}
+                  className="bg-white text-explorAI-blue px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors flex items-center justify-center"
+                >
                   <Search className="h-5 w-5 mr-2" />
                   Iniciar descoberta
                 </button>
-                <button className="bg-explorAI-blue/30 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-explorAI-blue/40 transition-colors border border-white/30">
+                <button 
+                  onClick={handleHowItWorks}
+                  className="bg-explorAI-blue/30 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-explorAI-blue/40 transition-colors border border-white/30"
+                >
                   Como funciona
                 </button>
               </div>
@@ -127,7 +149,11 @@ const Index: React.FC = () => {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {recommendedDestinations.map(destination => (
-                      <DestinationCard key={destination.id} destination={destination} />
+                      <DestinationCard 
+                        key={destination.id} 
+                        destination={destination} 
+                        budgetValue={preferences.budgetValue}
+                      />
                     ))}
                   </div>
                 </div>
@@ -153,7 +179,11 @@ const Index: React.FC = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {destinations.slice(0, 8).map(destination => (
-                <DestinationCard key={destination.id} destination={destination} />
+                <DestinationCard 
+                  key={destination.id} 
+                  destination={destination}
+                  budgetValue={preferences.budgetValue}
+                />
               ))}
             </div>
           </div>
