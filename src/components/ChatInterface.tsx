@@ -51,17 +51,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
     setNewMessage('');
     setIsLoading(true);
 
-    // Se a mensagem mencionar recomendações ou destinos, notifica o componente pai
-    if (
-      newMessage.toLowerCase().includes('recomen') || 
-      newMessage.toLowerCase().includes('sugest') || 
-      newMessage.toLowerCase().includes('destin') || 
-      newMessage.toLowerCase().includes('lugar') ||
-      newMessage.toLowerCase().includes('viajar para') ||
-      newMessage.toLowerCase().includes('o que me sugere')
-    ) {
-      onNewRecommendationRequest();
-    }
+    // Sempre notifica o componente pai para atualizar recomendações
+    onNewRecommendationRequest();
 
     try {
       // Gera resposta da IA usando Gemini
