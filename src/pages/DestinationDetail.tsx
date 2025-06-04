@@ -6,14 +6,6 @@ import { MapPin, Calendar, Clock, Star, ArrowLeft, Heart, Share, Hotel, Ticket, 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  generateDestinationItinerary, 
-  generateDestinationAttractions, 
-  generateDestinationTips,
-  DestinationItinerary,
-  DestinationAttraction,
-  DestinationTips
-} from '@/lib/destinationAIService';
 
 const DestinationDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,10 +19,6 @@ const DestinationDetail: React.FC = () => {
   const [destination, setDestination] = useState<Destination | null>(null);
   const [loading, setLoading] = useState(true);
   const [itineraryDays, setItineraryDays] = useState<number>(7);
-  const [aiItinerary, setAiItinerary] = useState<DestinationItinerary[]>([]);
-  const [aiAttractions, setAiAttractions] = useState<DestinationAttraction[]>([]);
-  const [aiTips, setAiTips] = useState<DestinationTips | null>(null);
-  const [contentLoading, setContentLoading] = useState(false);
   
   useEffect(() => {
     // Se o destino foi passado pelo state, usamos ele
@@ -49,34 +37,6 @@ const DestinationDetail: React.FC = () => {
     }
     setLoading(false);
   }, [id, passedState]);
-
-  // Load AI content when destination changes
-  useEffect(() => {
-    if (destination) {
-      loadAIContent();
-    }
-  }, [destination, itineraryDays]);
-
-  const loadAIContent = async () => {
-    if (!destination) return;
-    
-    setContentLoading(true);
-    try {
-      const [itinerary, attractions, tips] = await Promise.all([
-        generateDestinationItinerary(destination.name, destination.country, itineraryDays),
-        generateDestinationAttractions(destination.name, destination.country),
-        generateDestinationTips(destination.name, destination.country)
-      ]);
-      
-      setAiItinerary(itinerary);
-      setAiAttractions(attractions);
-      setAiTips(tips);
-    } catch (error) {
-      console.error('Erro ao carregar conteúdo AI:', error);
-    } finally {
-      setContentLoading(false);
-    }
-  };
   
   const getBudgetLabel = (cost: string): string => {
     const labels: Record<string, string> = {
@@ -411,7 +371,6 @@ const DestinationDetail: React.FC = () => {
                               variant={itineraryDays === parseInt(duration.split('-')[0]) ? "default" : "outline"}
                               size="sm"
                               onClick={() => handleDurationChange(duration)}
-                              disabled={contentLoading}
                             >
                               {duration.replace('-', ' ')}
                             </Button>
@@ -419,73 +378,55 @@ const DestinationDetail: React.FC = () => {
                         </div>
                       </div>
                       
-                      {contentLoading ? (
-                        <div className="flex justify-center py-8">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-explorAI-blue"></div>
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          {aiItinerary.map(day => (
-                            <div key={day.day} className="border-l-2 border-explorAI-blue pl-4">
-                              <h3 className="text-lg font-medium text-explorAI-darkBlue mb-3">Dia {day.day}</h3>
-                              
-                              <div className="space-y-4">
-                                {day.activities.map((activity, i) => (
-                                  <div key={i} className="bg-gray-50 rounded-lg p-4">
-                                    <div className="flex items-center mb-2">
-                                      <Badge variant="outline" className="bg-white border-explorAI-blue text-explorAI-blue">
-                                        {activity.time}
-                                      </Badge>
-                                    </div>
-                                    <h4 className="font-medium text-explorAI-darkBlue mb-1">{activity.activity}</h4>
-                                    <p className="text-sm text-explorAI-darkGray">{activity.description}</p>
+                      <div className="space-y-6">
+                        {itinerary.map(day => (
+                          <div key={day.day} className="border-l-2 border-explorAI-blue pl-4">
+                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-3">Dia {day.day}</h3>
+                            
+                            <div className="space-y-4">
+                              {day.activities.map((activity, i) => (
+                                <div key={i} className="bg-gray-50 rounded-lg p-4">
+                                  <div className="flex items-center mb-2">
+                                    <Badge variant="outline" className="bg-white border-explorAI-blue text-explorAI-blue">
+                                      {activity.time}
+                                    </Badge>
                                   </div>
-                                ))}
-                              </div>
+                                  <h4 className="font-medium text-explorAI-darkBlue mb-1">{activity.activity}</h4>
+                                  <p className="text-sm text-explorAI-darkGray">{activity.description}</p>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </TabsContent>
                   
                   <TabsContent value="atrações">
                     <div className="bg-white rounded-xl shadow-sm p-6">
-                      <h2 className="text-xl font-bold text-explorAI-darkBlue mb-4">Principais atrações em {destination?.name}</h2>
+                      <h2 className="text-xl font-bold text-explorAI-darkBlue mb-4">Principais atrações em {destination.name}</h2>
                       
-                      {contentLoading ? (
-                        <div className="flex justify-center py-8">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-explorAI-blue"></div>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {aiAttractions.map((attraction, i) => (
-                            <div key={i} className="border-b border-gray-100 last:border-b-0 pb-4 last:pb-0">
-                              <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">
-                                {attraction.name}
-                              </h3>
-                              <p className="text-explorAI-darkGray mb-2">
-                                {attraction.description}
-                              </p>
-                              <div className="flex items-center mt-2">
-                                {[...Array(5)].map((_, starIndex) => (
-                                  <Star 
-                                    key={starIndex} 
-                                    className={`h-4 w-4 ${
-                                      starIndex < Math.floor(attraction.rating) 
-                                        ? 'text-amber-500 fill-current' 
-                                        : 'text-gray-300'
-                                    }`} 
-                                  />
-                                ))}
-                                <span className="ml-2 text-sm text-gray-500">
-                                  {attraction.rating.toFixed(1)} - {attraction.category}
-                                </span>
-                              </div>
+                      <div className="space-y-4">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <div key={i} className="border-b border-gray-100 last:border-b-0 pb-4 last:pb-0">
+                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">
+                              Atração {i} em {destination.name}
+                            </h3>
+                            <p className="text-explorAI-darkGray mb-2">
+                              Descrição detalhada da atração, incluindo sua importância histórica ou cultural, 
+                              o que você pode esperar ao visitar e dicas especiais para aproveitar melhor.
+                            </p>
+                            <div className="flex items-center mt-2">
+                              <Star className="h-4 w-4 text-amber-500 fill-current" />
+                              <Star className="h-4 w-4 text-amber-500 fill-current" />
+                              <Star className="h-4 w-4 text-amber-500 fill-current" />
+                              <Star className="h-4 w-4 text-amber-500 fill-current" />
+                              <Star className="h-4 w-4 text-gray-300" />
+                              <span className="ml-2 text-sm text-gray-500">(Avaliação dos visitantes)</span>
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </TabsContent>
                   
@@ -493,33 +434,37 @@ const DestinationDetail: React.FC = () => {
                     <div className="bg-white rounded-xl shadow-sm p-6">
                       <h2 className="text-xl font-bold text-explorAI-darkBlue mb-4">Dicas úteis para sua viagem</h2>
                       
-                      {contentLoading ? (
-                        <div className="flex justify-center py-8">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-explorAI-blue"></div>
+                      <div className="space-y-6">
+                        <div>
+                          <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Quando ir</h3>
+                          <p className="text-explorAI-darkGray">
+                            A melhor época para visitar {destination.name} é durante {getBestSeasonText(destination.bestTimeToVisit)}. 
+                            Durante esse período, você encontra clima agradável e pode aproveitar ao máximo as atrações locais.
+                          </p>
                         </div>
-                      ) : aiTips ? (
-                        <div className="space-y-6">
-                          <div>
-                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Quando ir</h3>
-                            <p className="text-explorAI-darkGray">{aiTips.whenToGo}</p>
-                          </div>
-                          
-                          <div>
-                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Transporte local</h3>
-                            <p className="text-explorAI-darkGray">{aiTips.transportation}</p>
-                          </div>
-                          
-                          <div>
-                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Documentação</h3>
-                            <p className="text-explorAI-darkGray">{aiTips.documentation}</p>
-                          </div>
-                          
-                          <div>
-                            <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Dicas culturais</h3>
-                            <p className="text-explorAI-darkGray">{aiTips.culturalTips}</p>
-                          </div>
+                        
+                        <div>
+                          <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Transporte local</h3>
+                          <p className="text-explorAI-darkGray">
+                            Dicas sobre as melhores formas de se locomover na região, opções de transporte público, 
+                            táxis e aplicativos disponíveis.
+                          </p>
                         </div>
-                      ) : null}
+                        
+                        <div>
+                          <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Documentação</h3>
+                          <p className="text-explorAI-darkGray">
+                            Informações sobre documentos necessários, vistos e outras exigências para visitar o destino.
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h3 className="text-lg font-medium text-explorAI-darkBlue mb-2">Dicas culturais</h3>
+                          <p className="text-explorAI-darkGray">
+                            Costumes locais, etiqueta e recomendações para respeitar a cultura local e ter uma experiência autêntica.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
