@@ -6,6 +6,14 @@ import { useNavigate } from 'react-router-dom';
 const Header: React.FC = () => {
   const navigate = useNavigate();
   
+  const handleLogoClick = () => {
+    if (window.location.pathname !== '/') {
+      navigate('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  
   const handleExplore = () => {
     // First navigate to home page if not already there
     if (window.location.pathname !== '/') {
@@ -57,7 +65,7 @@ const Header: React.FC = () => {
   return (
     <header className="w-full bg-white shadow-sm py-4 px-6">
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex items-center mb-4 sm:mb-0 cursor-pointer" onClick={() => navigate('/')}>
+        <div className="flex items-center mb-4 sm:mb-0 cursor-pointer" onClick={handleLogoClick}>
           <Compass className="h-8 w-8 text-explorAI-blue mr-3" strokeWidth={2.5} />
           <div>
             <h1 className="text-2xl font-bold">

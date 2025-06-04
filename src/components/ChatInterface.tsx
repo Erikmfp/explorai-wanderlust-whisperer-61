@@ -2,8 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Send, CornerDownLeft, Settings, Eye, EyeOff, Key } from 'lucide-react';
+import { Send, CornerDownLeft } from 'lucide-react';
 import { ChatMessage, generateAIResponse, UserPreferences } from '@/lib/aiService';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -23,20 +22,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini-api-key') || '');
-  const [showApiKey, setShowApiKey] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  // Save API key to localStorage when it changes
-  useEffect(() => {
-    if (apiKey) {
-      localStorage.setItem('gemini-api-key', apiKey);
-    } else {
-      localStorage.removeItem('gemini-api-key');
-    }
-  }, [apiKey]);
 
   // Scroll para o final da conversa quando novas mensagens são adicionadas
   useEffect(() => {
@@ -77,8 +64,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
     }
 
     try {
-      // Gera resposta da IA (com ou sem API key)
-      const aiContent = await generateAIResponse([...messages, userMessage], preferences, apiKey);
+      // Gera resposta da IA usando Gemini
+      const aiContent = await generateAIResponse([...messages, userMessage], preferences);
       
       // Adiciona resposta da IA
       const aiMessage: ChatMessage = {
@@ -96,9 +83,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
       const errorMessage: ChatMessage = {
         id: uuidv4(),
         role: 'ai',
-        content: apiKey 
-          ? 'Desculpe, houve um problema com a conexão à IA. Verifique sua chave API ou tente novamente mais tarde.'
-          : 'Desculpe, estou enfrentando dificuldades para processar sua solicitação. Poderia tentar novamente?',
+        content: 'Desculpe, estou enfrentando dificuldades técnicas no momento. Verifique se a API do Gemini está configurada nas variáveis de ambiente.',
         timestamp: new Date()
       };
       
@@ -127,52 +112,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   return (
     <div className="flex flex-col h-[600px] bg-explorAI-gray rounded-xl overflow-hidden border border-gray-200 shadow-sm">
       <div className="bg-explorAI-blue text-white p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="font-semibold">Chat com ExplorAI</h2>
-            <p className="text-sm text-blue-100">Converse comigo para descobrir seu próximo destino</p>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/20 h-8 w-8"
-            onClick={() => setShowApiKeyInput(!showApiKeyInput)}
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
+        <div>
+          <h2 className="font-semibold">Chat com ExplorAI</h2>
+          <p className="text-sm text-blue-100">Converse comigo para descobrir seu próximo destino</p>
         </div>
-        
-        {showApiKeyInput && (
-          <div className="mt-3 space-y-2">
-            <div className="flex items-center text-sm text-blue-100">
-              <Key className="h-3 w-3 mr-1" />
-              <span>Chave API do Gemini (opcional para IA avançada)</span>
-            </div>
-            <div className="flex space-x-2">
-              <div className="relative flex-1">
-                <Input
-                  type={showApiKey ? "text" : "password"}
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Insira sua chave API do Gemini..."
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 text-sm"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 text-white/60 hover:text-white hover:bg-white/10"
-                  onClick={() => setShowApiKey(!showApiKey)}
-                >
-                  {showApiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                </Button>
-              </div>
-            </div>
-            <p className="text-xs text-blue-200">
-              {apiKey ? '🟢 IA avançada ativada' : '🔴 Usando simulação de IA'}
-            </p>
-          </div>
-        )}
       </div>
       
       <div 
@@ -229,7 +172,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={apiKey ? "Digite sua mensagem para a IA avançada..." : "Digite sua mensagem..."}
+            placeholder="Digite sua mensagem..."
             className="resize-none min-h-[60px]"
             disabled={isLoading}
           />
@@ -251,9 +194,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
             <CornerDownLeft className="h-3 w-3 mr-1" />
             <span>Pressione Enter para enviar</span>
           </div>
-          {apiKey && (
-            <span className="text-explorAI-blue font-medium">IA Avançada Ativa</span>
-          )}
+          <span className="text-explorAI-blue font-medium">Powered by Gemini AI</span>
         </div>
       </form>
     </div>
