@@ -1,4 +1,3 @@
-
 export interface Destination {
   id: string;
   name: string;
@@ -108,7 +107,7 @@ export const destinations: Destination[] = [
     name: "Nova Zelândia",
     country: "Nova Zelândia",
     description: "País com paisagens de tirar o fôlego, desde montanhas nevadas até praias intocadas e florestas primitivas, perfeito para aventureiros.",
-    imageUrl: "https://images.unsplash.com/photo-1493606278519-11aa9f86e40a",
+    imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
     tags: ["natureza", "aventura", "montanhas", "trekking", "paisagens"],
     ratings: {
       culture: 7.5,
@@ -125,7 +124,7 @@ export const destinations: Destination[] = [
     name: "Budapeste",
     country: "Hungria",
     description: "Capital húngara cortada pelo Rio Danúbio, conhecida por sua arquitetura histórica, banhos termais e cena gastronômica emergente.",
-    imageUrl: "https://images.unsplash.com/photo-1551867633-194f125bcc72",
+    imageUrl: "https://images.unsplash.com/photo-1541849546-216549ae216d",
     tags: ["arquitetura", "história", "termas", "cultura", "gastronomia"],
     ratings: {
       culture: 8.5,
