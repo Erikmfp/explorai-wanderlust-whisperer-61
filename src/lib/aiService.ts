@@ -50,8 +50,44 @@ export const generateAIResponse = async (
   console.log('Mensagem do usuário:', lastUserMessage);
   console.log('Tem preferências:', hasPreferences);
 
+  // Se o usuário pergunta sobre suas preferências ou configurações
+  if (lastUserMessage.includes('selecionei') || lastUserMessage.includes('configurações') || lastUserMessage.includes('preferências') || lastUserMessage.includes('você consegue ver')) {
+    if (hasPreferences) {
+      let response = "Sim! Consigo ver suas preferências perfeitamente:\n\n";
+      
+      if (preferences.interests.length > 0) {
+        response += `🎯 **Interesses:** ${preferences.interests.join(', ')}\n`;
+      }
+      
+      if (preferences.preferredActivities.length > 0) {
+        response += `🎮 **Atividades preferidas:** ${preferences.preferredActivities.join(', ')}\n`;
+      }
+      
+      response += `🧳 **Estilo de viagem:** ${preferences.travelStyle}\n`;
+      response += `💰 **Orçamento:** ${preferences.budget}`;
+      
+      if (preferences.budgetValue) {
+        response += ` (R$ ${preferences.budgetValue.toLocaleString('pt-BR')})`;
+      }
+      
+      if (preferences.duration) {
+        response += `\n⏰ **Duração:** ${preferences.duration}`;
+      }
+      
+      if (preferences.season && preferences.season !== 'qualquer') {
+        response += `\n🌤️ **Época preferida:** ${preferences.season}`;
+      }
+      
+      response += "\n\nCom base nessas informações, posso fazer recomendações muito mais precisas! O que você gostaria de saber?";
+      
+      return response;
+    } else {
+      return "Ainda não vejo nenhuma preferência configurada. Você pode definir seus interesses, atividades preferidas e orçamento no painel ao lado para que eu possa fazer recomendações personalizadas!";
+    }
+  }
+
   // Análise contextual da mensagem
-  const isAskingForDestinations = /(?:destino|viajar|recomen|sugest|lugar|onde|país|cidade)/i.test(lastUserMessage);
+  const isAskingForDestinations = /(?:destino|viajar|recomen|sugest|lugar|onde|país|cidade|o que me sugere)/i.test(lastUserMessage);
   const isAskingAboutBudget = /(?:orçamento|dinheiro|custo|preço|valor|gasto)/i.test(lastUserMessage);
   const isAskingAboutTime = /(?:tempo|dias|duração|período|quando|época)/i.test(lastUserMessage);
   const isGreeting = /(?:oi|olá|hello|bom dia|boa tarde|boa noite)/i.test(lastUserMessage);
@@ -61,9 +97,9 @@ export const generateAIResponse = async (
   if (isGreeting && lastResponseType !== 'greeting') {
     lastResponseType = 'greeting';
     if (hasPreferences) {
-      return `Olá! Que bom te ver novamente! Vejo que você já configurou suas preferências - ${preferences.interests.join(', ')} são ótimas escolhas! Como posso ajudar você a encontrar o destino perfeito hoje?`;
+      return `Olá! Que bom te ver! Vejo que você configurou suas preferências: gosta de ${preferences.interests.join(', ')} e prefere ${preferences.preferredActivities.join(', ')}. Seu estilo é ${preferences.travelStyle} com orçamento ${preferences.budget}. Como posso ajudar você a encontrar o destino perfeito?`;
     }
-    return "Olá! Bem-vindo ao ExplorAI! Para começar, que tal me contar o que você mais gosta em uma viagem? Praia, montanha, cultura, gastronomia...?";
+    return "Olá! Bem-vindo ao ExplorAI! Vou ajudar você a encontrar destinos incríveis. Configure suas preferências no painel ao lado para recomendações mais precisas!";
   }
 
   if (isAskingForDestinations) {
@@ -74,185 +110,66 @@ export const generateAIResponse = async (
       
       if (destinations.length > 0) {
         const topDestinations = destinations.slice(0, 3);
-        let response = `Perfeito! Baseado em suas preferências (${preferences.interests.join(', ')}) e atividades favoritas (${preferences.preferredActivities.join(', ')}), encontrei alguns destinos incríveis:\n\n`;
+        let response = `Perfeito! Com base em suas preferências:\n`;
+        response += `• **Interesses:** ${preferences.interests.join(', ')}\n`;
+        response += `• **Atividades:** ${preferences.preferredActivities.join(', ')}\n`;
+        response += `• **Estilo:** ${preferences.travelStyle}\n`;
+        response += `• **Orçamento:** ${preferences.budget}\n\n`;
+        response += `Encontrei estes destinos ideais para você:\n\n`;
         
         topDestinations.forEach((dest, index) => {
-          response += `${index + 1}. **${dest.name}, ${dest.country}** - ${dest.description.substring(0, 100)}...\n`;
+          response += `**${index + 1}. ${dest.name}, ${dest.country}**\n`;
+          response += `${dest.description.substring(0, 120)}...\n`;
+          
+          // Explica por que este destino combina
+          const reasons = [];
+          if (preferences.interests.some(interest => dest.tags.includes(interest))) {
+            reasons.push(`combina com seu interesse em ${preferences.interests.join(', ')}`);
+          }
+          if (preferences.travelStyle === 'aventureiro' && dest.ratings.adventure > 7) {
+            reasons.push('perfeito para aventureiros');
+          }
+          if (preferences.travelStyle === 'relaxado' && dest.ratings.relaxation > 7) {
+            reasons.push('ideal para relaxar');
+          }
+          
+          if (reasons.length > 0) {
+            response += `*Por que é perfeito: ${reasons.join(', ')}*\n\n`;
+          }
         });
         
-        // Adiciona informação sobre orçamento
         if (preferences.budgetValue) {
-          const budgetInfo = getBudgetAdvice(preferences.budgetValue, topDestinations[0].averageCost);
-          response += `\n💰 ${budgetInfo}`;
+          response += `💰 Seu orçamento de R$ ${preferences.budgetValue.toLocaleString('pt-BR')} está ${getBudgetFit(preferences.budgetValue, topDestinations[0].averageCost)}`;
         }
         
-        // Adiciona informação sobre temporada
-        if (preferences.season && preferences.season !== 'qualquer') {
-          response += `\n🌤️ Para sua preferência de viajar no ${preferences.season}, ${topDestinations[0].name} é uma excelente escolha!`;
-        }
-        
-        response += "\n\nQue tal explorar mais detalhes sobre algum desses destinos?";
         return response;
       } else {
-        return "Hmm, com suas preferências específicas, preciso expandir um pouco a busca. Que tal me contar se você estaria aberto a explorar algo um pouco diferente do usual? Às vezes os melhores destinos são aqueles que nos surpreendem!";
+        return `Com suas preferências específicas (${preferences.interests.join(', ')} + ${preferences.preferredActivities.join(', ')}), vou buscar opções um pouco diferentes. Que tal ser mais flexível em algum aspecto? Isso me ajudaria a encontrar lugares incríveis para você!`;
       }
     } else {
-      return "Adoraria recomendar destinos perfeitos para você! Mas primeiro, me conta: você prefere aventura ou relaxamento? Praia ou montanha? E qual seu orçamento aproximado por pessoa? Isso me ajuda a encontrar exatamente o que você procura! 🎯";
+      return "Para fazer recomendações precisas, preciso conhecer suas preferências! Configure seus interesses, atividades favoritas e orçamento no painel ao lado. Assim posso sugerir destinos perfeitos para seu perfil! 🎯";
     }
   }
 
-  if (isAskingAboutBudget && lastResponseType !== 'budget') {
-    lastResponseType = 'budget';
-    if (preferences.budgetValue) {
-      const category = getBudgetCategory(preferences.budgetValue);
-      return `Pelo seu orçamento de R$ ${preferences.budgetValue.toLocaleString('pt-BR')} por pessoa, você está na categoria "${category}". Isso te dá ${getBudgetPossibilities(category)}. Quer saber quais destinos cabem perfeitamente nesse orçamento?`;
-    }
-    return "O orçamento é super importante para escolher o destino ideal! Pode me dizer quanto você pretende gastar por pessoa? Assim posso recomendar lugares que vão te dar o máximo de experiência pelo seu investimento! 💸";
-  }
-
-  if (isAskingAboutTime && lastResponseType !== 'time') {
-    lastResponseType = 'time';
-    if (preferences.duration) {
-      return `${preferences.duration} é um período excelente! ${getTimeAdvice(preferences.duration)} Considerando esse tempo, que tipo de experiência você quer priorizar?`;
-    }
-    return "A duração da viagem faz toda diferença no planejamento! Você está pensando em quantos dias? Um final de semana, uma semana, ou uma aventura mais longa?";
-  }
-
-  if (isSharingPreferences && lastResponseType !== 'preferences') {
-    lastResponseType = 'preferences';
-    const newInfo = extractPreferencesFromMessage(lastUserMessage);
-    return `Que legal! ${newInfo} Isso me ajuda muito a entender seu perfil de viajante. ${getPersonalizedQuestion(preferences, lastUserMessage)}`;
-  }
-
-  // Perguntas contextuais baseadas no que já sabemos
-  if (hasPreferences) {
-    const missingInfo = getMissingPreferences(preferences);
-    if (missingInfo.length > 0) {
-      return `Ótimo! Já sei bastante sobre suas preferências. ${missingInfo[0]} Isso vai me ajudar a refinar ainda mais as recomendações!`;
-    }
-  }
-
-  // Respostas variadas para manter a conversa fluida
-  const contextualResponses = [
-    "Interessante! Me conta mais sobre isso. O que mais te atrai em uma viagem?",
-    "Entendi! E você prefere destinos mais movimentados ou lugares mais tranquilos?",
-    "Que legal! Você já pensou em explorar destinos fora do óbvio? Às vezes as melhores experiências estão nos lugares menos esperados!",
-    "Hmm, e quando você viaja, prefere relaxar ou ter uma agenda cheia de atividades?",
+  // Outras respostas contextuais
+  const responses = [
+    `Interessante! Com suas preferências em ${preferences.interests.join(' e ')}, que tipo específico de experiência você procura?`,
+    `Baseado no que você gosta (${preferences.interests.join(', ')}), você prefere destinos mais conhecidos ou lugares únicos?`,
+    `Vejo que você é do tipo ${preferences.travelStyle}. Isso combina muito com alguns destinos que tenho em mente!`,
+    "Me conte mais sobre o que está procurando. Posso usar suas preferências para dar sugestões muito específicas!"
   ];
 
-  // Evita repetir a mesma resposta
-  const availableResponses = contextualResponses.filter(resp => 
-    !conversationContext.some(ctx => resp.toLowerCase().includes(ctx.substring(0, 10)))
-  );
-
-  return availableResponses.length > 0 
-    ? availableResponses[Math.floor(Math.random() * availableResponses.length)]
-    : "Conte-me mais sobre o que você procura em uma viagem ideal!";
+  return hasPreferences 
+    ? responses[Math.floor(Math.random() * responses.length)]
+    : "Configure suas preferências no painel ao lado para que eu possa entender melhor seu perfil e fazer recomendações personalizadas!";
 };
 
-// Funções auxiliares para respostas mais inteligentes
-function getBudgetCategory(value: number): string {
-  if (value < 2000) return 'econômico';
-  if (value < 5000) return 'moderado';
-  if (value < 15000) return 'confortável';
-  if (value < 50000) return 'luxo';
-  return 'ultra luxo';
-}
-
-function getBudgetAdvice(userBudget: number, destinationCost: string): string {
-  const category = getBudgetCategory(userBudget);
+function getBudgetFit(userBudget: number, destinationCost: string): string {
+  const costMap = { 'low': 2000, 'medium': 5000, 'high': 15000, 'very high': 30000 };
+  const destCost = costMap[destinationCost] || 5000;
   
-  const adviceMap: Record<string, Record<string, string>> = {
-    'econômico': {
-      'low': 'Perfeito! Seu orçamento está ideal para este destino.',
-      'medium': 'Com planejamento, dá para aproveitar bem!',
-      'high': 'Pode ser um pouco apertado, mas não impossível.',
-      'very high': 'Talvez seja melhor considerar outras opções.'
-    },
-    'moderado': {
-      'low': 'Excelente! Você terá uma margem confortável.',
-      'medium': 'Perfeita combinação custo-benefício!',
-      'high': 'Dá para aproveitar com um bom planejamento.',
-      'very high': 'Pode ser um investimento alto para este perfil.'
-    },
-    'confortável': {
-      'low': 'Você poderá se dar alguns luxos extras!',
-      'medium': 'Orçamento perfeito para uma viagem confortável.',
-      'high': 'Consegue aproveitar muito bem tudo que o destino oferece.',
-      'very high': 'Uma experiência premium está ao seu alcance!'
-    }
-  };
-
-  return adviceMap[category]?.[destinationCost] || 'Vamos encontrar opções que cabem no seu orçamento!';
-}
-
-function getBudgetPossibilities(category: string): string {
-  const possibilities: Record<string, string> = {
-    'econômico': 'acesso a destinos nacionais incríveis e alguns internacionais com bom planejamento',
-    'moderado': 'uma boa variedade de destinos nacionais e internacionais',
-    'confortável': 'acesso a destinos premium e experiências diferenciadas',
-    'luxo': 'possibilidades quase ilimitadas para experiências exclusivas',
-    'ultra luxo': 'acesso aos destinos mais exclusivos do mundo'
-  };
-  
-  return possibilities[category] || 'muitas possibilidades interessantes';
-}
-
-function getTimeAdvice(duration: string): string {
-  const adviceMap: Record<string, string> = {
-    '2-3 dias': 'Perfeito para uma escapada! Dá para conhecer bem uma cidade ou região específica.',
-    '4-6 dias': 'Tempo ideal para explorar um destino sem pressa, com dias para relaxar também.',
-    '7-10 dias': 'Duração clássica! Permite conhecer várias facetas de um país ou região.',
-    '11-15 dias': 'Tempo generoso para uma experiência mais profunda e completa.',
-    '15+ dias': 'Uma verdadeira jornada! Dá para explorar múltiplos destinos ou mergulhar profundamente na cultura local.'
-  };
-  
-  return adviceMap[duration] || 'É um bom período para viajar!';
-}
-
-function extractPreferencesFromMessage(message: string): string {
-  if (message.includes('praia')) return 'Praia é sempre uma ótima escolha!';
-  if (message.includes('montanha')) return 'Montanhas oferecem paisagens incríveis!';
-  if (message.includes('cultura')) return 'Cultura enriquece muito a experiência de viagem!';
-  if (message.includes('gastronomia')) return 'Gastronomia é uma das melhores formas de conhecer um lugar!';
-  if (message.includes('aventura')) return 'Aventura torna qualquer viagem inesquecível!';
-  return 'Adoro conhecer mais sobre suas preferências!';
-}
-
-function getPersonalizedQuestion(preferences: UserPreferences, lastMessage: string): string {
-  if (preferences.interests.length === 0) {
-    return "E me conta, o que mais te emociona em uma viagem: paisagens naturais, história, gastronomia ou algo mais?";
-  }
-  
-  if (!preferences.budgetValue) {
-    return "E quanto ao orçamento? Isso me ajuda a filtrar as opções perfeitas para você!";
-  }
-  
-  if (!preferences.duration || preferences.duration === '') {
-    return "Quantos dias você costuma gostar de viajar?";
-  }
-  
-  return "Com essas informações, já posso fazer recomendações bem personalizadas! Quer ver algumas opções?";
-}
-
-function getMissingPreferences(preferences: UserPreferences): string[] {
-  const missing = [];
-  
-  if (preferences.interests.length === 0) {
-    missing.push("Que tipo de experiências te interessam mais em uma viagem?");
-  }
-  
-  if (!preferences.budgetValue) {
-    missing.push("Qual seria seu orçamento aproximado por pessoa?");
-  }
-  
-  if (!preferences.duration) {
-    missing.push("Por quantos dias você gostaria de viajar?");
-  }
-  
-  if (preferences.season === 'qualquer') {
-    missing.push("Tem alguma época do ano que prefere viajar?");
-  }
-  
-  return missing;
+  if (userBudget >= destCost * 1.5) return "mais que suficiente! 😊";
+  if (userBudget >= destCost) return "adequado para este destino! ✅";
+  if (userBudget >= destCost * 0.7) return "um pouco apertado, mas viável com planejamento! 💪";
+  return "pode ser desafiador, mas vamos encontrar alternativas! 🤔";
 }

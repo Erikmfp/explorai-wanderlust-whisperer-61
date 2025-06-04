@@ -23,13 +23,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Scroll para o final da conversa quando novas mensagens são adicionadas
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
     if (newMessage.trim() === '') return;
 
     // Adiciona a mensagem do usuário
@@ -50,7 +57,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
       newMessage.toLowerCase().includes('sugest') || 
       newMessage.toLowerCase().includes('destin') || 
       newMessage.toLowerCase().includes('lugar') ||
-      newMessage.toLowerCase().includes('viajar para')
+      newMessage.toLowerCase().includes('viajar para') ||
+      newMessage.toLowerCase().includes('o que me sugere')
     ) {
       onNewRecommendationRequest();
     }
@@ -88,16 +96,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      e.stopPropagation();
       handleSendMessage();
     }
   };
 
   // Sugestões rápidas para ajudar o usuário a iniciar a conversa
   const quickSuggestions = [
-    "Quais destinos você recomenda para amantes de gastronomia?",
-    "Estou procurando lugares com natureza exuberante.",
-    "Quero conhecer destinos com rica história e cultura.",
-    "Sugira um destino para relaxar em praias paradisíacas."
+    "O que você me sugere?",
+    "Você consegue ver minhas preferências?",
+    "Quero destinos com praia e cultura",
+    "Sugira um lugar para relaxar"
   ];
 
   return (
@@ -107,7 +116,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
         <p className="text-sm text-blue-100">Converse comigo para descobrir seu próximo destino</p>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-explorAI-lightBlue">
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-explorAI-lightBlue scroll-smooth"
+      >
         {messages.map((message) => (
           <div 
             key={message.id}
@@ -149,7 +161,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
         </div>
       )}
       
-      <div className="p-4 bg-white border-t border-gray-200">
+      <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200">
         <div className="flex items-end space-x-2">
           <Textarea
             value={newMessage}
@@ -160,7 +172,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
             disabled={isLoading}
           />
           <Button 
-            onClick={handleSendMessage} 
+            type="submit"
             disabled={isLoading || newMessage.trim() === ''}
             size="icon"
             className="bg-explorAI-blue hover:bg-blue-600 h-[60px] w-[60px] rounded-lg flex-shrink-0"
@@ -176,7 +188,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
           <CornerDownLeft className="h-3 w-3 mr-1" />
           <span>Pressione Enter para enviar</span>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
