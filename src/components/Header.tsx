@@ -7,14 +7,57 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   
   const handleExplore = () => {
-    // Scroll to recommendations section
-    document.getElementById('recomendacoes')?.scrollIntoView({ behavior: 'smooth' });
+    // First navigate to home page if not already there
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const preferencesSection = document.querySelector('.bg-explorAI-gray');
+        if (preferencesSection) {
+          preferencesSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      const preferencesSection = document.querySelector('.bg-explorAI-gray');
+      if (preferencesSection) {
+        preferencesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handleHowItWorks = () => {
+    // First navigate to home page if not already there
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleDestinations = () => {
+    // First navigate to home page if not already there
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        document.getElementById('destinos')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      document.getElementById('destinos')?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
   
   return (
     <header className="w-full bg-white shadow-sm py-4 px-6">
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex items-center mb-4 sm:mb-0">
+        <div className="flex items-center mb-4 sm:mb-0 cursor-pointer" onClick={() => navigate('/')}>
           <Compass className="h-8 w-8 text-explorAI-blue mr-3" strokeWidth={2.5} />
           <div>
             <h1 className="text-2xl font-bold">
@@ -26,12 +69,18 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-2">
-          <a href="#como-funciona" className="text-sm text-explorAI-darkGray hover:text-explorAI-blue transition-colors px-3 py-1">
+          <button 
+            onClick={handleHowItWorks}
+            className="text-sm text-explorAI-darkGray hover:text-explorAI-blue transition-colors px-3 py-1 hover:bg-explorAI-lightBlue rounded-md"
+          >
             Como Funciona
-          </a>
-          <a href="#destinos" className="text-sm text-explorAI-darkGray hover:text-explorAI-blue transition-colors px-3 py-1">
+          </button>
+          <button 
+            onClick={handleDestinations}
+            className="text-sm text-explorAI-darkGray hover:text-explorAI-blue transition-colors px-3 py-1 hover:bg-explorAI-lightBlue rounded-md"
+          >
             Destinos
-          </a>
+          </button>
           <button 
             onClick={handleExplore} 
             className="flex items-center space-x-1 bg-explorAI-blue text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors text-sm"

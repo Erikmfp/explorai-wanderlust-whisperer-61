@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Destination, destinations } from '@/data/destinations';
@@ -265,7 +264,7 @@ const DestinationDetail: React.FC = () => {
           <div className="container mx-auto px-4 relative z-10 text-white mt-12">
             <Button 
               variant="ghost" 
-              className="text-white hover:bg-white/20 mb-6"
+              className="text-white hover:bg-white/20 mb-6 bg-black/30 border border-white/30"
               onClick={() => navigate(-1)}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -293,11 +292,11 @@ const DestinationDetail: React.FC = () => {
               </div>
               
               <div className="flex space-x-2 mt-6 md:mt-0">
-                <Button variant="outline" className="text-white border-white hover:bg-white/20 hover:text-white">
+                <Button className="bg-white/20 text-white border border-white/50 hover:bg-white hover:text-explorAI-blue font-medium">
                   <Heart className="mr-1 h-4 w-4" />
                   Favorito
                 </Button>
-                <Button variant="outline" className="text-white border-white hover:bg-white/20 hover:text-white">
+                <Button className="bg-white/20 text-white border border-white/50 hover:bg-white hover:text-explorAI-blue font-medium">
                   <Share className="mr-1 h-4 w-4" />
                   Compartilhar
                 </Button>
@@ -534,8 +533,7 @@ const DestinationDetail: React.FC = () => {
                     organização da sua viagem para {destination.name}.
                   </p>
                   <Button 
-                    variant="outline" 
-                    className="w-full text-white border-white hover:bg-white hover:text-explorAI-blue"
+                    className="w-full bg-white text-explorAI-blue border-2 border-white hover:bg-white/90 hover:text-explorAI-blue font-medium"
                     onClick={() => navigate('/')}
                   >
                     Falar com assistente
