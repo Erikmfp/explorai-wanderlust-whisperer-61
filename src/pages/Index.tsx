@@ -74,7 +74,7 @@ const Index: React.FC = () => {
         <section 
           className="relative bg-gradient-travel text-white py-12 md:py-20 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `linear-gradient(135deg, rgba(42, 133, 255, 0.8) 0%, rgba(56, 198, 117, 0.8) 100%), url('/lovable-uploads/44b8f513-835b-49e9-a35c-583e8f2bfd9b.png')`
+            backgroundImage: `linear-gradient(135deg, rgba(42, 133, 255, 0.4) 0%, rgba(56, 198, 117, 0.4) 100%), url('/lovable-uploads/44b8f513-835b-49e9-a35c-583e8f2bfd9b.png')`
           }}
         >
           <div className="container mx-auto px-4 relative z-10">
