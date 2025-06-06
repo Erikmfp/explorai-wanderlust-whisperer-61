@@ -70,9 +70,14 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="bg-gradient-travel text-white py-12 md:py-20">
-          <div className="container mx-auto px-4">
+        {/* Hero Section with Background Image */}
+        <section 
+          className="relative bg-gradient-travel text-white py-12 md:py-20 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(42, 133, 255, 0.8) 0%, rgba(56, 198, 117, 0.8) 100%), url('/lovable-uploads/44b8f513-835b-49e9-a35c-583e8f2bfd9b.png')`
+          }}
+        >
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
                 Descubra destinos perfeitos para o seu estilo de viagem
