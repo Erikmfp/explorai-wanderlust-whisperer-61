@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { UserPreferences } from '@/lib/aiService';
@@ -121,7 +120,12 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div 
+      className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url('/lovable-uploads/cb5dce73-f661-4286-b593-3686604f6d11.png')`
+      }}
+    >
       <div className="flex items-center mb-4">
         <Compass className="h-5 w-5 text-explorAI-blue mr-2" />
         <h2 className="text-lg font-semibold text-explorAI-darkBlue">Minhas preferências de viagem</h2>
