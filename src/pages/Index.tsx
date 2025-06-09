@@ -143,13 +143,24 @@ const Index: React.FC = () => {
         </section>
         
         {/* Interface principal */}
-        <section className="py-12 bg-explorAI-gray/50">
-          <div className="container mx-auto px-4">
+        <section 
+          className="py-12 relative"
+          style={{
+            backgroundImage: `url('/lovable-uploads/cb5dce73-f661-4286-b593-3686604f6d11.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          {/* Overlay branco semi-transparente */}
+          <div className="absolute inset-0 bg-white/85 z-0"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <TravelPreferences onPreferencesChange={handlePreferencesChange} />
                 
-                <div id="recomendacoes" className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${showRecommendations ? '' : 'hidden'}`}>
+                <div id="recomendacoes" className={`bg-white/90 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 p-6 ${showRecommendations ? '' : 'hidden'}`}>
                   <h2 className="text-lg font-semibold text-explorAI-darkBlue mb-4">Recomendações para você</h2>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

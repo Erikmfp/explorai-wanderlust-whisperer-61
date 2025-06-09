@@ -120,180 +120,166 @@ const TravelPreferences: React.FC<TravelPreferencesProps> = ({ onPreferencesChan
   };
 
   return (
-    <div 
-      className="rounded-xl shadow-sm border border-gray-100 p-6 mb-6 relative overflow-hidden"
-      style={{
-        backgroundImage: `url('/lovable-uploads/cb5dce73-f661-4286-b593-3686604f6d11.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      {/* Overlay branco semi-transparente */}
-      <div className="absolute inset-0 bg-white/90 z-0"></div>
-      
-      {/* Conteúdo */}
-      <div className="relative z-10">
-        <div className="flex items-center mb-4">
-          <Compass className="h-5 w-5 text-explorAI-blue mr-2" />
-          <h2 className="text-lg font-semibold text-explorAI-darkBlue">Minhas preferências de viagem</h2>
-        </div>
-        
-        <Tabs defaultValue="interesses">
-          <TabsList className="grid grid-cols-6 mb-6">
-            <TabsTrigger value="interesses">Interesses</TabsTrigger>
-            <TabsTrigger value="atividades">Atividades</TabsTrigger>
-            <TabsTrigger value="estilo">Estilo</TabsTrigger>
-            <TabsTrigger value="orcamento">Orçamento</TabsTrigger>
-            <TabsTrigger value="duracao">Duração</TabsTrigger>
-            <TabsTrigger value="temporada">Temporada</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="interesses" className="space-y-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {['Cultura', 'Natureza', 'Gastronomia', 'História', 'Praia', 'Aventura', 'Arquitetura', 'Relaxamento'].map(interest => (
-                <div key={interest} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`interest-${interest}`} 
-                    checked={preferences.interests.includes(interest.toLowerCase())}
-                    onCheckedChange={() => handleInterestChange(interest.toLowerCase())}
-                  />
-                  <Label htmlFor={`interest-${interest}`} className="cursor-pointer">{interest}</Label>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="atividades" className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                'Explorar cultura local', 
-                'Aventuras ao ar livre', 
-                'Relaxar em paisagens naturais',
-                'Experimentar gastronomia',
-                'Apreciar a natureza',
-                'Atividades radicais',
-                'Festivais e eventos',
-                'Tours históricos',
-                'Visitas a museus e galerias',
-                'Mergulho e snorkeling',
-                'Trilhas e caminhadas',
-                'Passeios de bicicleta',
-                'Vida noturna',
-                'Compras'
-              ].map(activity => (
-                <div key={activity} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`activity-${activity}`} 
-                    checked={preferences.preferredActivities.includes(activity.toLowerCase())}
-                    onCheckedChange={() => handleActivityChange(activity.toLowerCase())}
-                  />
-                  <Label htmlFor={`activity-${activity}`} className="cursor-pointer">{activity}</Label>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="estilo" className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {['Aventureiro', 'Equilibrado', 'Cultural', 'Relaxado'].map(style => (
-                <Button 
-                  key={style}
-                  variant={preferences.travelStyle === style.toLowerCase() ? "default" : "outline"}
-                  onClick={() => handleStyleChange(style.toLowerCase())}
-                  className="h-auto py-3"
-                >
-                  {style}
-                </Button>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="orcamento" className="space-y-6">
-            <div className="px-2">
-              <div className="flex justify-between mb-1">
-                <span className="text-sm text-explorAI-darkGray">Orçamento por pessoa:</span>
-                <span className="text-sm font-medium text-explorAI-blue">
-                  {formatBudgetValue(preferences.budgetValue)}
-                </span>
-              </div>
-              
-              <Slider 
-                defaultValue={[5000]}
-                min={500}
-                max={100000}
-                step={500}
-                value={[preferences.budgetValue]}
-                onValueChange={handleBudgetSliderChange}
-                className="mt-6"
-              />
-              
-              <div className="flex justify-between mt-2 text-xs text-gray-500">
-                <span>R$ 500</span>
-                <span>R$ 100.000+</span>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-explorAI-lightBlue rounded-lg">
-              <p className="text-sm text-explorAI-darkBlue font-medium">
-                Categoria: <span className="text-explorAI-blue">{getBudgetCategory(preferences.budgetValue).charAt(0).toUpperCase() + getBudgetCategory(preferences.budgetValue).slice(1)}</span>
-              </p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="duracao" className="space-y-4">
-            <div className="flex items-center mb-4">
-              <Clock className="h-4 w-4 text-explorAI-blue mr-2" />
-              <p className="text-sm font-medium text-explorAI-darkBlue">Quantos dias você planeja viajar?</p>
-            </div>
-            
-            <RadioGroup 
-              value={preferences.duration}
-              onValueChange={handleDurationChange}
-              className="grid grid-cols-2 sm:grid-cols-3 gap-3"
-            >
-              {[
-                { label: "Final de semana (2-3 dias)", value: "2-3 dias" },
-                { label: "Semana curta (4-6 dias)", value: "4-6 dias" },
-                { label: "Uma semana (7-10 dias)", value: "7-10 dias" },
-                { label: "Duas semanas (11-15 dias)", value: "11-15 dias" },
-                { label: "Viagem longa (15+ dias)", value: "15+ dias" },
-              ].map((option) => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem id={option.value} value={option.value} />
-                  <Label htmlFor={option.value}>{option.label}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </TabsContent>
-          
-          <TabsContent value="temporada" className="space-y-4">
-            <div className="flex items-center mb-4">
-              <Sun className="h-4 w-4 text-explorAI-amber mr-2" />
-              <p className="text-sm font-medium text-explorAI-darkBlue">Em qual estação você prefere viajar?</p>
-            </div>
-            
-            <RadioGroup 
-              value={preferences.season}
-              onValueChange={handleSeasonChange}
-              className="grid grid-cols-2 gap-3"
-            >
-              {[
-                { label: "Verão (Dezembro a Março)", value: "verao" },
-                { label: "Outono (Março a Junho)", value: "outono" },
-                { label: "Inverno (Junho a Setembro)", value: "inverno" },
-                { label: "Primavera (Setembro a Dezembro)", value: "primavera" },
-                { label: "Qualquer época do ano", value: "qualquer" },
-              ].map((option) => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem id={option.value} value={option.value} />
-                  <Label htmlFor={option.value}>{option.label}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </TabsContent>
-        </Tabs>
+    <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <div className="flex items-center mb-4">
+        <Compass className="h-5 w-5 text-explorAI-blue mr-2" />
+        <h2 className="text-lg font-semibold text-explorAI-darkBlue">Minhas preferências de viagem</h2>
       </div>
+      
+      <Tabs defaultValue="interesses">
+        <TabsList className="grid grid-cols-6 mb-6">
+          <TabsTrigger value="interesses">Interesses</TabsTrigger>
+          <TabsTrigger value="atividades">Atividades</TabsTrigger>
+          <TabsTrigger value="estilo">Estilo</TabsTrigger>
+          <TabsTrigger value="orcamento">Orçamento</TabsTrigger>
+          <TabsTrigger value="duracao">Duração</TabsTrigger>
+          <TabsTrigger value="temporada">Temporada</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="interesses" className="space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {['Cultura', 'Natureza', 'Gastronomia', 'História', 'Praia', 'Aventura', 'Arquitetura', 'Relaxamento'].map(interest => (
+              <div key={interest} className="flex items-center space-x-2">
+                <Checkbox 
+                  id={`interest-${interest}`} 
+                  checked={preferences.interests.includes(interest.toLowerCase())}
+                  onCheckedChange={() => handleInterestChange(interest.toLowerCase())}
+                />
+                <Label htmlFor={`interest-${interest}`} className="cursor-pointer">{interest}</Label>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="atividades" className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              'Explorar cultura local', 
+              'Aventuras ao ar livre', 
+              'Relaxar em paisagens naturais',
+              'Experimentar gastronomia',
+              'Apreciar a natureza',
+              'Atividades radicais',
+              'Festivais e eventos',
+              'Tours históricos',
+              'Visitas a museus e galerias',
+              'Mergulho e snorkeling',
+              'Trilhas e caminhadas',
+              'Passeios de bicicleta',
+              'Vida noturna',
+              'Compras'
+            ].map(activity => (
+              <div key={activity} className="flex items-center space-x-2">
+                <Checkbox 
+                  id={`activity-${activity}`} 
+                  checked={preferences.preferredActivities.includes(activity.toLowerCase())}
+                  onCheckedChange={() => handleActivityChange(activity.toLowerCase())}
+                />
+                <Label htmlFor={`activity-${activity}`} className="cursor-pointer">{activity}</Label>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="estilo" className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {['Aventureiro', 'Equilibrado', 'Cultural', 'Relaxado'].map(style => (
+              <Button 
+                key={style}
+                variant={preferences.travelStyle === style.toLowerCase() ? "default" : "outline"}
+                onClick={() => handleStyleChange(style.toLowerCase())}
+                className="h-auto py-3"
+              >
+                {style}
+              </Button>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="orcamento" className="space-y-6">
+          <div className="px-2">
+            <div className="flex justify-between mb-1">
+              <span className="text-sm text-explorAI-darkGray">Orçamento por pessoa:</span>
+              <span className="text-sm font-medium text-explorAI-blue">
+                {formatBudgetValue(preferences.budgetValue)}
+              </span>
+            </div>
+            
+            <Slider 
+              defaultValue={[5000]}
+              min={500}
+              max={100000}
+              step={500}
+              value={[preferences.budgetValue]}
+              onValueChange={handleBudgetSliderChange}
+              className="mt-6"
+            />
+            
+            <div className="flex justify-between mt-2 text-xs text-gray-500">
+              <span>R$ 500</span>
+              <span>R$ 100.000+</span>
+            </div>
+          </div>
+          
+          <div className="p-3 bg-explorAI-lightBlue rounded-lg">
+            <p className="text-sm text-explorAI-darkBlue font-medium">
+              Categoria: <span className="text-explorAI-blue">{getBudgetCategory(preferences.budgetValue).charAt(0).toUpperCase() + getBudgetCategory(preferences.budgetValue).slice(1)}</span>
+            </p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="duracao" className="space-y-4">
+          <div className="flex items-center mb-4">
+            <Clock className="h-4 w-4 text-explorAI-blue mr-2" />
+            <p className="text-sm font-medium text-explorAI-darkBlue">Quantos dias você planeja viajar?</p>
+          </div>
+          
+          <RadioGroup 
+            value={preferences.duration}
+            onValueChange={handleDurationChange}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3"
+          >
+            {[
+              { label: "Final de semana (2-3 dias)", value: "2-3 dias" },
+              { label: "Semana curta (4-6 dias)", value: "4-6 dias" },
+              { label: "Uma semana (7-10 dias)", value: "7-10 dias" },
+              { label: "Duas semanas (11-15 dias)", value: "11-15 dias" },
+              { label: "Viagem longa (15+ dias)", value: "15+ dias" },
+            ].map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem id={option.value} value={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </TabsContent>
+        
+        <TabsContent value="temporada" className="space-y-4">
+          <div className="flex items-center mb-4">
+            <Sun className="h-4 w-4 text-explorAI-amber mr-2" />
+            <p className="text-sm font-medium text-explorAI-darkBlue">Em qual estação você prefere viajar?</p>
+          </div>
+          
+          <RadioGroup 
+            value={preferences.season}
+            onValueChange={handleSeasonChange}
+            className="grid grid-cols-2 gap-3"
+          >
+            {[
+              { label: "Verão (Dezembro a Março)", value: "verao" },
+              { label: "Outono (Março a Junho)", value: "outono" },
+              { label: "Inverno (Junho a Setembro)", value: "inverno" },
+              { label: "Primavera (Setembro a Dezembro)", value: "primavera" },
+              { label: "Qualquer época do ano", value: "qualquer" },
+            ].map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem id={option.value} value={option.value} />
+                <Label htmlFor={option.value}>{option.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
