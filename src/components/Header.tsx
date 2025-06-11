@@ -69,7 +69,7 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/bf9c4733-70d2-4e95-9680-a381736911ef.png" 
             alt="ExplorAI Logo" 
-            className="h-12"
+            className="h-16"
           />
         </div>
         
