@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Compass, Map } from 'lucide-react';
+import { Map } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
@@ -66,7 +66,11 @@ const Header: React.FC = () => {
     <header className="w-full bg-white shadow-sm py-4 px-6">
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center mb-4 sm:mb-0 cursor-pointer" onClick={handleLogoClick}>
-          <Compass className="h-8 w-8 text-explorAI-blue mr-3" strokeWidth={2.5} />
+          <img 
+            src="/lovable-uploads/bf9c4733-70d2-4e95-9680-a381736911ef.png" 
+            alt="ExplorAI Logo" 
+            className="h-12 mr-3"
+          />
           <div>
             <h1 className="text-2xl font-bold">
               <span className="gradient-text">Explor</span>
