@@ -1,6 +1,8 @@
 
 import { callGeminiAPI } from './geminiService';
 import { generateDestinationPrompt } from './chatPrompts';
+import { marked } from 'marked';
+
 
 export const generateDestinationRecommendation = async (
   destinationName: string,

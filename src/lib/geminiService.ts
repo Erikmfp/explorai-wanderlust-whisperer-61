@@ -1,13 +1,13 @@
 
 // Gemini API service with hidden key management
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCWTZ0_BFIkzObU1ziMy2x9fDWGSJX621Q';
 
 export interface GeminiMessage {
   role: 'user' | 'model';
   parts: [{ text: string }];
 }
 
-export const callGeminiAPI = async (
+export const callGeminiAPI = async ( 
   prompt: string,
   systemPrompt?: string
 ): Promise<string> => {
@@ -16,7 +16,7 @@ export const callGeminiAPI = async (
   }
 
   try {
-    const fullPrompt = systemPrompt ? `${systemPrompt}\n\n${prompt}` : prompt;
+    const fullPrompt = systemPrompt ? `${systemPrompt}\n\n${prompt}\nenvie como texto, sem nenhuma formataçã0` : prompt;
     
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`,

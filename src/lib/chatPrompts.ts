@@ -1,5 +1,7 @@
 
 import { UserPreferences } from './aiService';
+import { marked } from 'marked';
+
 
 export const generateChatSystemPrompt = (preferences: UserPreferences): string => {
   return `Você é o ExplorAI, um assistente especializado em recomendações de viagem personalizadas.
@@ -19,6 +21,7 @@ DIRETRIZES:
 - Considere sempre as preferências do usuário
 - Se não houver preferências definidas, incentive o usuário a configurá-las
 - Mantenha respostas concisas mas informativas (máximo 200 palavras)
+- separe em alguns paragrafos curtos tornando atrativo a leitura
 - Foque em destinos que realmente combinem com o perfil do usuário
 - Seja conversacional e natural, como se fosse um consultor de viagens experiente`;
 };

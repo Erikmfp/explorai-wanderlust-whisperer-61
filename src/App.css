@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 }
+
+.chat-container {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.message {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 10px;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.message.user {
+  background-color: #d1e7dd;
+  align-self: flex-end;
+}
+
+.message.bot {
+  background-color: #f8d7da;
+  align-self: flex-start;
+}
+  

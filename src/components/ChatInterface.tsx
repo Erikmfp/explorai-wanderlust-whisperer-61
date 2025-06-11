@@ -1,10 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, CornerDownLeft } from 'lucide-react';
 import { ChatMessage, generateAIResponse, UserPreferences } from '@/lib/aiService';
 import { v4 as uuidv4 } from 'uuid';
+import { marked } from 'marked';
 
 interface ChatInterfaceProps {
   preferences: UserPreferences;
@@ -25,7 +25,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll para o final da conversa quando novas mensagens são adicionadas
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -33,13 +32,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   }, [messages]);
 
   const handleSendMessage = async (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
+    if (e) e.preventDefault();
     if (newMessage.trim() === '') return;
 
-    // Adiciona a mensagem do usuário
     const userMessage: ChatMessage = {
       id: uuidv4(),
       role: 'user',
@@ -51,11 +46,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
     setNewMessage('');
     setIsLoading(true);
 
-    // Se a mensagem mencionar recomendações ou destinos, notifica o componente pai
     if (
-      newMessage.toLowerCase().includes('recomen') || 
-      newMessage.toLowerCase().includes('sugest') || 
-      newMessage.toLowerCase().includes('destin') || 
+      newMessage.toLowerCase().includes('recomen') ||
+      newMessage.toLowerCase().includes('sugest') ||
+      newMessage.toLowerCase().includes('destin') ||
       newMessage.toLowerCase().includes('lugar') ||
       newMessage.toLowerCase().includes('viajar para') ||
       newMessage.toLowerCase().includes('o que me sugere')
@@ -64,29 +58,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
     }
 
     try {
-      // Gera resposta da IA usando Gemini
       const aiContent = await generateAIResponse([...messages, userMessage], preferences);
-      
-      // Adiciona resposta da IA
       const aiMessage: ChatMessage = {
         id: uuidv4(),
         role: 'ai',
         content: aiContent,
         timestamp: new Date()
       };
-      
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Erro ao gerar resposta:', error);
-      
-      // Mensagem de erro como resposta da IA
       const errorMessage: ChatMessage = {
         id: uuidv4(),
         role: 'ai',
         content: 'Desculpe, estou enfrentando dificuldades técnicas no momento. Verifique se a API do Gemini está configurada nas variáveis de ambiente.',
         timestamp: new Date()
       };
-      
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -101,7 +88,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
     }
   };
 
-  // Sugestões rápidas para ajudar o usuário a iniciar a conversa
   const quickSuggestions = [
     "O que você me sugere?",
     "Você consegue ver minhas preferências?",
@@ -112,25 +98,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
   return (
     <div className="flex flex-col h-[600px] bg-explorAI-gray rounded-xl overflow-hidden border border-gray-200 shadow-sm">
       <div className="bg-explorAI-blue text-white p-4">
-        <div>
-          <h2 className="font-semibold">Chat com ExplorAI</h2>
-          <p className="text-sm text-blue-100">Converse comigo para descobrir seu próximo destino</p>
-        </div>
+        <h2 className="font-semibold">Chat com ExplorAI</h2>
+        <p className="text-sm text-blue-100">Converse comigo para descobrir seu próximo destino</p>
       </div>
-      
-      <div 
+
+      <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-4 bg-explorAI-lightBlue scroll-smooth"
       >
         {messages.map((message) => (
-          <div 
+          <div
             key={message.id}
             className={`${message.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}
           >
-            {message.content}
+            {message.role === 'ai' ? (
+              <div dangerouslySetInnerHTML={{ __html: marked(message.content) }} />
+            ) : (
+              <div>{message.content}</div>
+            )}
           </div>
         ))}
-        
+
         {isLoading && (
           <div className="chat-bubble-ai">
             <div className="flex items-center space-x-2">
@@ -143,10 +131,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
-      
+
       {messages.length === 1 && (
         <div className="px-4 py-3 bg-white border-t border-gray-100">
           <p className="text-sm text-explorAI-darkGray mb-2">Sugestões rápidas:</p>
@@ -165,7 +153,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
           </div>
         </div>
       )}
-      
+
       <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200">
         <div className="flex items-end space-x-2">
           <Textarea
@@ -176,7 +164,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ preferences, onNewRecomme
             className="resize-none min-h-[60px]"
             disabled={isLoading}
           />
-          <Button 
+          <Button
             type="submit"
             disabled={isLoading || newMessage.trim() === ''}
             size="icon"
