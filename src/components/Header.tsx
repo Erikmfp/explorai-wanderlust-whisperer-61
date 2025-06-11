@@ -69,15 +69,8 @@ const Header: React.FC = () => {
           <img 
             src="/lovable-uploads/bf9c4733-70d2-4e95-9680-a381736911ef.png" 
             alt="ExplorAI Logo" 
-            className="h-12 mr-3"
+            className="h-12"
           />
-          <div>
-            <h1 className="text-2xl font-bold">
-              <span className="gradient-text">Explor</span>
-              <span className="text-explorAI-darkBlue">AI</span>
-            </h1>
-            <p className="text-sm text-explorAI-darkGray">Recomendações de viagem personalizadas</p>
-          </div>
         </div>
         
         <div className="flex items-center space-x-2">
