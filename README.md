@@ -1,3 +1,5 @@
+## EXPLORAI
+
 ExplorAI - Seu Assistente de Viagens Inteligente
 🚀 Sobre o Projeto
 O ExplorAI é uma aplicação inovadora de planejamento de viagens que funciona como um agente de viagens pessoal. Utilizando o poder da Inteligência Artificial com a API do Gemini, nossa plataforma oferece recomendações de destinos totalmente personalizadas, baseadas nas suas preferências e interesses.
