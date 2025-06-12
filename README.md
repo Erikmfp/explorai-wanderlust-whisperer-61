@@ -1,73 +1,62 @@
-# Welcome to your Lovable project
+ExplorAI - Seu Assistente de Viagens Inteligente
+🚀 Sobre o Projeto
+O ExplorAI é uma aplicação inovadora de planejamento de viagens que funciona como um agente de viagens pessoal. Utilizando o poder da Inteligência Artificial com a API do Gemini, nossa plataforma oferece recomendações de destinos totalmente personalizadas, baseadas nas suas preferências e interesses.
 
-## Project info
+Converse com nosso assistente virtual, o ExplorAI, ajuste suas preferências de viagem, como interesses, orçamento e estilo, e deixe que nossa IA encontre o destino perfeito para você, incluindo joias escondidas que você não encontraria em guias tradicionais.
 
-**URL**: https://lovable.dev/projects/46564e8f-8d9e-461e-a19a-17a8bcfbc422
+✨ Principais Funcionalidades
+Recomendações Personalizadas: Receba sugestões de destinos que se alinham perfeitamente com seus interesses, como cultura, natureza, gastronomia e aventura.
+Assistente com IA (Gemini): Converse com um chat inteligente para tirar dúvidas, pedir sugestões e refinar suas buscas.
+Filtros Detalhados: Ajuste suas preferências de orçamento, duração da viagem, atividades e estilo para obter os melhores resultados.
+Detalhes do Destino: Explore informações completas sobre cada local, incluindo a melhor época para visitar, custo médio e principais atrações.
+Roteiros Gerados por IA: Para cada destino, obtenha um roteiro personalizado e detalhado, gerado dinamicamente para otimizar sua viagem.
+🛠️ Tecnologias Utilizadas
+Este projeto foi construído com as seguintes tecnologias de ponta:
 
-## How can I edit this code?
+Frontend: React, Vite, TypeScript
+Estilização: Tailwind CSS, shadcn/ui
+Inteligência Artificial: Google Gemini API
+Roteamento: React Router DOM
+Gerenciamento de Estado: React Query, React Hooks
+📦 Como Executar o Projeto
+Siga os passos abaixo para executar o projeto localmente.
 
-There are several ways of editing your application.
+Pré-requisitos
+Node.js (versão 18 ou superior)
+npm ou yarn
+Instalação
+Clone o repositório:
 
-**Use Lovable**
+Bash
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/893faea8-f395-4127-b93b-6264216c17d9) and start prompting.
+git clone <URL_DO_SEU_REPOSITORIO>
+cd <NOME_DO_DIRETORIO>
+Instale as dependências:
 
-Changes made via Lovable will be committed automatically to this repo.
+Bash
 
-**Use your preferred IDE**
+npm install
+Configure as variáveis de ambiente:
+Crie um arquivo .env na raiz do projeto e adicione sua chave da API do Gemini:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+VITE_GEMINI_API_KEY=SUA_CHAVE_DA_API_AQUI
+Obs: Uma chave de API padrão está incluída no arquivo src/lib/geminiService.ts para fins de demonstração, mas é altamente recomendável usar sua própria chave.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Inicie o servidor de desenvolvimento:
 
-Follow these steps:
+Bash
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
-```
+O aplicativo estará disponível em http://localhost:8080.
 
-**Edit a file directly in GitHub**
+👨‍💻 Equipe
+Este projeto foi desenvolvido com dedicação pela equipe:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Matheus Liporace
+Erik Marcio
+Felipe Seda
+Alex Oliveira
+🎨 Apresentação
+Confira nossa apresentação detalhada do projeto no Canva:
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/893faea8-f395-4127-b93b-6264216c17d9) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Link da Apresentação no Canva
